@@ -26,7 +26,7 @@ public class Main {
 
 	private void print() {
 		for (AlarmHeader ah: ahList)
-			System.out.println(ah.print());
+			ah.print();
 	}
 
 	private AlarmHeader addAlarmHeader( String aAlarmHeaderName) {
@@ -123,9 +123,6 @@ public class Main {
 				}
 			}
 
-		}
-		for (AlarmHeader ah: ahList) {
-			ah.updateTotalOccurrances(ah.getOccurrances());
 		}
 	}
 }

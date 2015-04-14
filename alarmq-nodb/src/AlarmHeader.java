@@ -1,4 +1,7 @@
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.logging.Logger;
 
 
@@ -7,6 +10,8 @@ public class AlarmHeader {
 	private final static Logger LOGGER = Logger.getLogger(AlarmHeader.class.getName()); 
 	private String AlarmHeaderName;
 	private int Occurrances;
+	private Map<String, AlarmHeaderCorrelation> CorrAlarmHeaders = new HashMap<String, AlarmHeaderCorrelation>();
+
 	private ArrayList<AlarmHeaderCorrelation> CorrelatedAHs;
 	
 	public String getAlarmHeaderName() {
@@ -31,34 +36,24 @@ public class AlarmHeader {
 	
 	
 	public void addMatch(String aAlarmHeader) {
-		boolean foundAh = false;
-		for (AlarmHeaderCorrelation ahc:  CorrelatedAHs) {
-			if(aAlarmHeader.equals(ahc.getAlarmHeader())) {
-				ahc.addMatch();
-				foundAh = true;
-				break;
-			}
+		if( !CorrAlarmHeaders.containsKey(aAlarmHeader)) {
+			CorrAlarmHeaders.put(aAlarmHeader, new AlarmHeaderCorrelation(aAlarmHeader));
 		}
-		if (!foundAh) {
-			CorrelatedAHs.add(new AlarmHeaderCorrelation(aAlarmHeader));
+		else {
+			CorrAlarmHeaders.get(aAlarmHeader).addMatch();
 		}
 	}
 	
 
-	public String print() {
-		String ret = new String("AlarmHeader - " + AlarmHeaderName + "\n");
-		for (AlarmHeaderCorrelation corrAh: CorrelatedAHs) {
-			ret = ret + "  " + " \"" + corrAh.getAlarmHeader() + " \" matched " + " " + String.format("%.2f", corrAh.getProbabilityMatch()) + "%\n";
-		} 
-		
-		return ret;
-	}
-	
-	void updateTotalOccurrances (int nrofOccurrances) {
-		LOGGER.fine(AlarmHeaderName + " - Setting total number of occurrances");
-		for (AlarmHeaderCorrelation ahc:  CorrelatedAHs) {
-				ahc.setTotalOccurrances(nrofOccurrances);
+	public void print() {
+		System.out.println("AlarmHeader - " + AlarmHeaderName + " --  Probability of correlated alarms");
+		Iterator it = CorrAlarmHeaders.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry<String, AlarmHeaderCorrelation> pair = (Map.Entry<String, AlarmHeaderCorrelation>)it.next();
+		    System.out.println("   " + pair.getKey() + " has prob. " + String.format("%.2f", pair.getValue().getProbabilityMatch(Occurrances)));
 		}
+		System.out.println("\n");
+
 	}
 
 	public int getOccurrances() {
