@@ -1,3 +1,4 @@
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,13 +19,7 @@ public class Main {
 		ahList = new ArrayList<AlarmHeader>();
 	}
 
-	public static void main(String[] args) {
-		Main main = new Main();
-		main.analyze();
-		main.print();
-	}
-
-	private void print() {
+	public void print() {
 		for (AlarmHeader ah: ahList)
 			ah.print();
 	}
@@ -52,13 +47,13 @@ public class Main {
 	/**
 	 * @param args
 	 */
-	public void analyze() {
+	public void analyze(File file) {
 
 
 		ReadCsv reader = new ReadCsv();
 		List<Tuple> tupleList = null;
 		try {
-			tupleList = reader.readCvs("/home/carltmik/Downloads/ALC4-3.csv");
+			tupleList = reader.readCvs(file.getAbsolutePath());
 		} catch (NumberFormatException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
