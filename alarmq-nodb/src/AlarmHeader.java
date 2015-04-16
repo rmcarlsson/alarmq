@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -11,8 +10,6 @@ public class AlarmHeader {
 	private String AlarmHeaderName;
 	private int Occurrances;
 	private Map<String, AlarmHeaderCorrelation> CorrAlarmHeaders = new HashMap<String, AlarmHeaderCorrelation>();
-
-	private ArrayList<AlarmHeaderCorrelation> CorrelatedAHs;
 	
 	public String getAlarmHeaderName() {
 		return AlarmHeaderName;
@@ -21,7 +18,6 @@ public class AlarmHeader {
 	public AlarmHeader(String aName) {
 		LOGGER.finer("Creating new AlarmHeader");
 		AlarmHeaderName = aName;
-		CorrelatedAHs = new ArrayList<AlarmHeaderCorrelation>();
 		Occurrances = 1;
 	}
 	

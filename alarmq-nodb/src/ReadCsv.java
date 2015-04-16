@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 public class ReadCsv {
 
 	private final static Logger LOGGER = Logger.getLogger(ReadCsv.class.getName()); 
+	private SimpleDateFormat sdf = new SimpleDateFormat("dd/MMM/yyyy hh:mm:ss a");
 
 	public List<Tuple> readCvs(String csvFileName) throws NumberFormatException, IOException  {
 
@@ -26,7 +27,7 @@ public class ReadCsv {
 		Scanner scanner = null;
 		int index = 0;
 
-		int lines = 0;
+		
 		while ((line = reader.readLine()) != null) {
 			boolean skipTuple = false;
 			Tuple tuple = new Tuple();
@@ -45,7 +46,6 @@ public class ReadCsv {
 					}
 					else {
 						scanner.close();
-						lines++;
 						LOGGER.finest("Invalid date, skipping tuple" );
 						skipTuple = true;
 						break;
@@ -62,7 +62,6 @@ public class ReadCsv {
 					}
 					else {
 						scanner.close();
-						lines++;
 						LOGGER.finest("Invalid date, skipping tuple" );
 						skipTuple = true;
 						break;
@@ -78,7 +77,6 @@ public class ReadCsv {
 			if (!skipTuple) {
 				list.add(tuple);
 				scanner.close();
-				lines++;
 			}
 		}
 		
@@ -93,12 +91,15 @@ public class ReadCsv {
 	private Date parseDate(String data) {
 		
 		Date ret = null;
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MMM/yyyy hh:mm:ss a");
+		LOGGER.info("Working with date " + data);
+
 		                                           // 08/Feb/2015 11:14:16 a.m.
 		
 		// Make SimpleDateFormat handle the somewhat odd AM format (a.m. -> AM)
 		String inter = data.replace("a.m.", "AM");
 		inter = inter.replace("p.m.", "PM");
+		
+		LOGGER.info("Date to parse is " + inter);
 		
 		try { 
 			ret = sdf.parse(inter);

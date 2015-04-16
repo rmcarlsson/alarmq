@@ -1,5 +1,10 @@
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -7,16 +12,27 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.logging.Logger;
 
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.SwingWorker;
 
-public class Main {
+
+public class Main extends SwingWorker<Void, String>  {
 
 	private final static Logger LOGGER = Logger.getLogger(Main.class.getName()); 
 	private ArrayList<AlarmHeader> ahList;
 	private final static long CORRELATION_TIME_WINDOW = 3;
+	private File file;
+	private JLabel label;
+	private JPanel pane;
 
-
-	public Main() {
+	public Main(File aFile, JPanel aPane) {
 		ahList = new ArrayList<AlarmHeader>();
+		 file = aFile;
+		 label = new JLabel("Please choose a file");
+		 pane = aPane;
+	 
 	}
 
 	public void print() {
@@ -46,10 +62,12 @@ public class Main {
 
 	/**
 	 * @param args
+	 * @throws  
 	 */
-	public void analyze(File file) {
+	public void analyze()  {
+		
 
-
+		publish("Reading CSV file");
 		ReadCsv reader = new ReadCsv();
 		List<Tuple> tupleList = null;
 		try {
@@ -58,11 +76,41 @@ public class Main {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+		publish("Sorting tuples");
 		Collections.sort(tupleList);
+		publish("Statistic analysis");
 
-		for(Tuple analysisTuple: tupleList) {
+		float max = tupleList.size();
+		float i=0;
+		SimpleDateFormat sdf = new SimpleDateFormat("YYY MMM");
+		String analysisDate = "no date";
+		ListIterator<Tuple> liOut = tupleList.listIterator();
 
+		// Iterate in reverse.
+		while(liOut.hasNext()) {
+		//for(Tuple analysisTuple: tupleList) {
+			Tuple analysisTuple = liOut.next();
+			if (!sdf.format(analysisTuple.getTm()).equals(analysisDate)) {
+				analysisDate = sdf.format(analysisTuple.getTm());
+				publish("Statistic analysis - analyzing " + analysisDate);
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+
+			i++;
+			setProgress((int)(i*100/max));
+				
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			AlarmHeader listAlarmHeader = null;
 			ArrayList<AlarmHeader> corrAhs = new ArrayList<AlarmHeader>();
 
@@ -119,5 +167,24 @@ public class Main {
 			}
 
 		}
+		//publish("Done");
 	}
+
+	@Override
+	protected Void doInBackground() throws Exception {
+		analyze();
+		print();
+		return null;
+	}
+	
+	protected void process(List<String> chunks) {
+        for (String text : chunks) {
+   		 	label.setText(text);
+        }
+        pane.revalidate();
+        pane.repaint();
+
+    }
+	
+	
 }

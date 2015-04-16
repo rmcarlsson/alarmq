@@ -1,6 +1,3 @@
-import java.util.logging.Logger;
-
-
 public class AlarmHeaderCorrelation {
 	
 	private int matches;
